@@ -8,7 +8,7 @@ export class ProdutoRepository {
     return this.produtos;
   }
 
-  salva(dadosProduto) {
+  salva(dadosProduto: any) {
     this.produtos.push(dadosProduto);
   }
 }
