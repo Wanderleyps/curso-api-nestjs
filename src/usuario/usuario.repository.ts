@@ -22,13 +22,7 @@ export class UsuarioRepository {
   }
 
   async atualiza(id: string, dadosDeAtualizacao: Partial<UsuarioEntity>) {
-    const possivelUsuario = this.usuarios.find(
-      (usuarioSalvo) => usuarioSalvo.id === id,
-    );
-
-    if (!possivelUsuario) {
-      throw new Error('Usuário não existe');
-    }
+    const usuario = this.buscaPorId(id);
 
     // Itera sobre as entradas do objeto dadosDeAtualizacao
     Object.entries(dadosDeAtualizacao).forEach(([chave, valor]) => {
@@ -38,8 +32,29 @@ export class UsuarioRepository {
       }
 
       // Atualiza o campo correspondente no usuário encontrado com o novo valor
-      possivelUsuario[chave] = valor;
+      usuario[chave] = valor;
     });
+
+    return usuario;
+  }
+
+  async remove(id: string) {
+    const usuario = this.buscaPorId(id);
+    this.usuarios = this.usuarios.filter(
+      (usuarioSalvo) => usuarioSalvo.id !== id,
+    );
+
+    return usuario;
+  }
+
+  private buscaPorId(id: string) {
+    const possivelUsuario = this.usuarios.find(
+      (usuarioSalvo) => usuarioSalvo.id === id,
+    );
+
+    if (!possivelUsuario) {
+      throw new Error('Usuário não existe');
+    }
 
     return possivelUsuario;
   }
