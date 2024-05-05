@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { CriaProdutoDTO } from './dto/CriaProduto.dto';
 
 @Injectable()
 export class ProdutoRepository {
@@ -8,7 +9,7 @@ export class ProdutoRepository {
     return this.produtos;
   }
 
-  salva(dadosProduto: any) {
+  salva(dadosProduto: CriaProdutoDTO) {
     this.produtos.push(dadosProduto);
   }
 }
