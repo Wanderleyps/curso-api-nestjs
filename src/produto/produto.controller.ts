@@ -12,10 +12,14 @@ import { CriaProdutoDTO } from './dto/CriaProduto.dto';
 import { randomUUID } from 'crypto';
 import { ProdutoEntity } from './produto.entity';
 import { AtualizaProdutoDTO } from './dto/AtualizaProduto.dto';
+import { ProdutoService } from './produto.service';
 
 @Controller('produtos')
 export class ProdutoController {
-  constructor(private readonly produtoRepository: ProdutoRepository) {}
+  constructor(
+    private readonly produtoRepository: ProdutoRepository,
+    private readonly produtoService: ProdutoService,
+  ) {}
 
   @Post()
   async criaNovo(@Body() dadosProduto: CriaProdutoDTO) {
@@ -28,10 +32,10 @@ export class ProdutoController {
     produto.quantidade = dadosProduto.quantidade;
     produto.descricao = dadosProduto.descricao;
     produto.categoria = dadosProduto.categoria;
-    // produto.caracteristicas = dadosProduto.caracteristicas;
-    // produto.imagens = dadosProduto.imagens;
+    produto.caracteristicas = dadosProduto.caracteristicas;
+    produto.imagens = dadosProduto.imagens;
 
-    const produtoCadastrado = this.produtoRepository.salva(produto);
+    const produtoCadastrado = this.produtoService.criaProduto(produto);
     return produtoCadastrado;
   }
 
