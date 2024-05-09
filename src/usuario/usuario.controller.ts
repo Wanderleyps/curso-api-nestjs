@@ -13,10 +13,14 @@ import {
   Put,
 } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
+import { UsuarioService } from './usuario.service';
 
 @Controller('/usuarios')
 export class UsuarioController {
-  constructor(private usuarioRepository: UsuarioRepository) {}
+  constructor(
+    private usuarioRepository: UsuarioRepository,
+    private usuarioService: UsuarioService,
+  ) {}
 
   @Post()
   async criaUsuario(@Body() dadosDoUsuario: CriaUsuarioDTO) {
@@ -26,7 +30,7 @@ export class UsuarioController {
     usuarioEntity.nome = dadosDoUsuario.nome;
     usuarioEntity.id = uuid();
 
-    this.usuarioRepository.salvar(usuarioEntity);
+    this.usuarioService.criaUsuario(usuarioEntity);
 
     return {
       usuario: new ListaUsuarioDTO(usuarioEntity.id, usuarioEntity.nome),
@@ -36,10 +40,7 @@ export class UsuarioController {
 
   @Get()
   async listUsuarios() {
-    const usuariosSalvos = await this.usuarioRepository.listar();
-    const usauriosLista = usuariosSalvos.map(
-      (usuario) => new ListaUsuarioDTO(usuario.id, usuario.nome),
-    );
+    const usauriosLista = await this.usuarioService.listaUsuarios();
 
     return usauriosLista;
   }
@@ -49,16 +50,13 @@ export class UsuarioController {
     @Param('id') id: string,
     @Body() novosDados: AtualizaUsuarioDTO,
   ) {
-    const usuarioAtualizado = await this.usuarioRepository.atualiza(
+    const usuarioAtualizado = await this.usuarioService.atualizaUsuario(
       id,
       novosDados,
     );
 
     return {
-      usuario: new ListaUsuarioDTO(
-        usuarioAtualizado.id,
-        usuarioAtualizado.nome,
-      ),
+      usuario: usuarioAtualizado,
       mensagem: 'usuário atualizado com sucesso',
     };
   }
@@ -67,10 +65,10 @@ export class UsuarioController {
 
   @Delete('/:id')
   async removeUsuario(@Param('id') id: string) {
-    const usuarioRemovido = await this.usuarioRepository.remove(id);
+    const usuarioRemovido = await this.usuarioService.deletaUsuario(id);
 
     return {
-      usuario: new ListaUsuarioDTO(usuarioRemovido.id, usuarioRemovido.nome),
+      usuario: usuarioRemovido,
       mensagem: 'usuário removido com sucesso',
     };
   }
